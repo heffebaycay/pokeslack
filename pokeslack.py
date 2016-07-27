@@ -47,8 +47,9 @@ class Pokeslack:
         map_url = 'http://maps.google.com?saddr=%s,%s&daddr=%s,%s&directionsmode=walking' % (position[0], position[1], pokemon['latitude'], pokemon['longitude'])
         min_remaining = int(expires_in.total_seconds() / 60)
         time_remaining = '%s%ss' % ('%dm' % min_remaining if min_remaining > 0 else '', expires_in.seconds - 60 * min_remaining)
-        stars = ''.join([':star:' for x in xrange(rarity)])
-        message = 'I found a <%s|%s> %s <%s|%s miles away> expiring in %s%s' % (pokedex_url, pokemon['name'], stars, map_url, miles_away, time_remaining, from_lure)
+        goldStar = '<img src="https://dujrsrsgsd3nh.cloudfront.net/img/emoticons/goldstar-1417755861.png"/>'
+        stars = ''.join([goldStar for x in xrange(rarity)])
+        message = 'I found a <a href="%s">%s</a> %s <a href="%s">%s km away</a> expiring in %s%s' % (pokedex_url, pokemon['name'], stars, map_url, miles_away, time_remaining, from_lure)
         # bold message if rarity > 4
         if rarity >= 4:
             message = '*%s*' % message
@@ -59,11 +60,14 @@ class Pokeslack:
 
     def _send(self, message):
         payload = {
-            'username': 'Poké Alert!',
-            'text': message,
-            'icon_emoji': ':ghost:'
+            'color': 'green',
+            'notify': 'true',
+            'message_format': 'html',
+            'message': message
         }
         s = json.dumps(payload)
-        r = requests.post(self.slack_webhook_url, data=s)
-        logger.info('slack post result: %s, %s', r.status_code, r.reason)
+        requestHeaders = {'Content-Type': 'application/json'}
+        logger.info('hip chat web hook: %s', self.slack_webhook_url)
+        r = requests.post(self.slack_webhook_url, data=s, headers = requestHeaders);
+        logger.info('slack post result: %s, %s, %s', r.status_code, r.reason, r.text)
         return r.status_code == 200

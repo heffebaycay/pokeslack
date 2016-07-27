@@ -60,9 +60,9 @@ if __name__ == '__main__':
             pokemons = []
             for pokemon in pokesearch.search(position[0], position[1], step_limit, step_size):
                 pokemon_position = (pokemon['latitude'], pokemon['longitude'], 0)
-                distance = vincenty(position, pokemon_position).miles
+                distance = vincenty(position, pokemon_position).kilometers
                 expires_in = pokemon['disappear_time'] - datetime.utcnow()
-                logger.info("adding pokemon: %s - %s, rarity: %s, expires in: %s, distance: %s miles", pokemon['pokemon_id'], pokemon['name'], pokemon['rarity'], expires_in, distance)
+                logger.info("adding pokemon: %s - %s, rarity: %s, expires in: %s, distance: %s kilometers", pokemon['pokemon_id'], pokemon['name'], pokemon['rarity'], expires_in, distance)
                 pokeslack.try_send_pokemon(pokemon, position, distance, debug=False)
                 pokemons.append(pokemon)
             with open(cached_filename, 'w') as fp:
