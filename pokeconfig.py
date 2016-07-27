@@ -33,8 +33,10 @@ class Pokeconfig:
             logger.info('running locally, reading config from %s', config_path)
             with open(config_path, 'r') as fp:
                 for line in fp:
-                    parts = line.split('=')
-                    env[parts[0].strip()] = parts[1].strip()
+                    separatorIndex = line.index("=")
+                    key = line[:separatorIndex]
+                    value = line[separatorIndex + 1:]
+                    env[key] = value
         else:
             logger.info('running on heroku, reading config from environment')
             env = os.environ
